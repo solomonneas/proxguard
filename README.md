@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License" />
 </p>
 
-# 🛡️ ProxGuard
+# 🛡️ Solomon's ProxGuard
 
 **Proxmox firewall rule visualizer with drag-drop ordering and conflict detection.**
 
