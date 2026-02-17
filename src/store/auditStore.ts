@@ -102,35 +102,31 @@ function serializeReport(report: AuditReport): StoredFullReport {
   };
 }
 
+/** Build a fallback SecurityRule from stored metadata when rule no longer exists in codebase */
+function buildFallbackRule(stored: RuleWithoutTest): SecurityRule {
+  return {
+    ...stored,
+    test: () => ({ passed: false, evidence: 'Rule no longer available in current ruleset' }),
+  };
+}
+
 export function hydrateStoredReport(entry: StoredHistoryEntry): AuditReport | null {
   if (!isStoredFullReport(entry)) return null;
 
   return {
     ...entry,
-    findings: entry.findings
-      .map((finding) => {
-        const fullRule = ruleById.get(finding.rule.id);
-        if (!fullRule) return null;
-        return {
-          rule: fullRule,
-          result: finding.result,
-        };
-      })
-      .filter((finding): finding is NonNullable<typeof finding> => finding !== null),
+    findings: entry.findings.map((finding) => ({
+      rule: ruleById.get(finding.rule.id) ?? buildFallbackRule(finding.rule),
+      result: finding.result,
+    })),
     categories: entry.categories.map((category) => ({
       category: category.category,
       score: category.score,
       maxScore: category.maxScore,
-      findings: category.findings
-        .map((finding) => {
-          const fullRule = ruleById.get(finding.rule.id);
-          if (!fullRule) return null;
-          return {
-            rule: fullRule,
-            result: finding.result,
-          };
-        })
-        .filter((finding): finding is NonNullable<typeof finding> => finding !== null),
+      findings: category.findings.map((finding) => ({
+        rule: ruleById.get(finding.rule.id) ?? buildFallbackRule(finding.rule),
+        result: finding.result,
+      })),
     })),
   };
 }
