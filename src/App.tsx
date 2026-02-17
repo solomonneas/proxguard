@@ -5,12 +5,16 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Routes, Route, NavLink } from 'react-router-dom';
-import { Shield, History, Lock, X, FileText, Server, AlertTriangle, Calculator } from 'lucide-react';
+import { Shield, History, Lock, X, FileText, Server, AlertTriangle, Calculator, ClipboardCheck, Home, GitCompareArrows } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuditPage } from './components/AuditPage';
 import { HistoryPage } from './components/HistoryPage';
+import { CompliancePage } from './components/CompliancePage';
+import { DashboardPage } from './components/DashboardPage';
+import { ComparisonPage } from './components/ComparisonPage';
 import { VariantSelector } from './components/VariantSelector';
 import { ThemeProvider, useTheme } from './variants/ThemeProvider';
+import { useAuditStore } from './store/auditStore';
 import { allRules } from './rules';
 
 // ─── Explainability Modal ───────────────────────────────────────────────────
@@ -189,6 +193,7 @@ function TransparencyModal({ open, onClose }: TransparencyModalProps) {
 
 function AppShell() {
   const theme = useTheme();
+  const auditReport = useAuditStore((s) => s.auditReport);
   const [isTransparencyOpen, setIsTransparencyOpen] = useState(false);
 
   return (
@@ -234,6 +239,17 @@ function AppShell() {
                 }`
               }
             >
+              <Home className="w-4 h-4" />
+              <span className="hidden sm:inline">Home</span>
+            </NavLink>
+            <NavLink
+              to="/audit"
+              className={({ isActive }) =>
+                `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive ? theme.classes.navActive : theme.classes.navInactive
+                }`
+              }
+            >
               <Shield className="w-4 h-4" />
               <span className="hidden sm:inline">Audit</span>
             </NavLink>
@@ -248,6 +264,30 @@ function AppShell() {
               <History className="w-4 h-4" />
               <span className="hidden sm:inline">History</span>
             </NavLink>
+            <NavLink
+              to="/compare"
+              className={({ isActive }) =>
+                `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive ? theme.classes.navActive : theme.classes.navInactive
+                }`
+              }
+            >
+              <GitCompareArrows className="w-4 h-4" />
+              <span className="hidden sm:inline">Compare</span>
+            </NavLink>
+            {auditReport && (
+              <NavLink
+                to="/compliance"
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive ? theme.classes.navActive : theme.classes.navInactive
+                  }`
+                }
+              >
+                <ClipboardCheck className="w-4 h-4" />
+                <span className="hidden sm:inline">Compliance</span>
+              </NavLink>
+            )}
           </nav>
         </div>
 
@@ -260,8 +300,11 @@ function AppShell() {
       {/* ─── Main Content ────────────────────────────────────────── */}
       <main className="flex-1">
         <Routes>
-          <Route path="/" element={<AuditPage />} />
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/audit" element={<AuditPage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/compare" element={<ComparisonPage />} />
+          <Route path="/compliance" element={<CompliancePage />} />
         </Routes>
       </main>
 
@@ -278,9 +321,7 @@ function AppShell() {
                 color: 'inherit',
                 textUnderlineOffset: '2px',
                 textDecorationColor: 'var(--pg-accent)',
-                '--tw-ring-color': 'var(--pg-accent)',
-                '--tw-ring-offset-color': 'var(--pg-bg)',
-              }}
+              } as React.CSSProperties}
             >
               100% client-side — your configs never leave your browser
             </button>
