@@ -94,11 +94,18 @@ export function ComparisonPage() {
   const improved: string[] = [];
   const regressed: string[] = [];
   const unchanged: string[] = [];
+  const newRules: string[] = [];
+  const removedRules: string[] = [];
 
   const allRuleIds = new Set([...findingA.keys(), ...findingB.keys()]);
   allRuleIds.forEach((ruleId) => {
     const before = findingA.get(ruleId);
     const after = findingB.get(ruleId);
+
+    // Rule only exists in report B (new rule added between audits)
+    if (before === undefined) { newRules.push(ruleId); return; }
+    // Rule only exists in report A (rule removed between audits)
+    if (after === undefined) { removedRules.push(ruleId); return; }
 
     if (before === false && after === true) improved.push(ruleId);
     else if (before === true && after === false) regressed.push(ruleId);
@@ -211,6 +218,31 @@ export function ComparisonPage() {
           <p className={`mt-2 text-xs ${theme.classes.textSecondary}`}>Includes rules that stayed passing or stayed failing.</p>
         </div>
       </motion.div>
+
+      {(newRules.length > 0 || removedRules.length > 0) && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {newRules.length > 0 && (
+            <div className={`${theme.classes.card} border ${theme.classes.cardBorder} rounded-xl p-4`}>
+              <h3 className="text-sm font-semibold text-cyan-400">New Rules in B ({newRules.length})</h3>
+              <ul className="mt-2 space-y-1">
+                {newRules.slice(0, 12).map((id) => (
+                  <li key={id} className={`text-xs ${theme.classes.textSecondary}`}>{titleByRule.get(id) ?? id}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {removedRules.length > 0 && (
+            <div className={`${theme.classes.card} border ${theme.classes.cardBorder} rounded-xl p-4`}>
+              <h3 className="text-sm font-semibold text-amber-400">Removed Rules ({removedRules.length})</h3>
+              <ul className="mt-2 space-y-1">
+                {removedRules.slice(0, 12).map((id) => (
+                  <li key={id} className={`text-xs ${theme.classes.textSecondary}`}>{titleByRule.get(id) ?? id}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </motion.div>
+      )}
     </div>
   );
 }

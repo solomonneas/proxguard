@@ -25,6 +25,7 @@ export function HistoryPage() {
   const setComparisonPair = useAuditStore((s) => s.setComparisonPair);
   const theme = useTheme();
   const navigate = useNavigate();
+  const deleteHistoryEntry = useAuditStore((s) => s.deleteHistoryEntry);
   const [selected, setSelected] = useState<number[]>([]);
 
   const fullReportTimestamps = useMemo(
@@ -34,11 +35,14 @@ export function HistoryPage() {
 
   /** Delete a single history entry by timestamp */
   const deleteEntry = (timestamp: number) => {
-    useAuditStore.setState((s) => ({
-      history: s.history.filter((e) => e.timestamp !== timestamp),
-      comparisonPair: s.comparisonPair?.includes(timestamp) ? null : s.comparisonPair,
-    }));
+    deleteHistoryEntry(timestamp);
     setSelected((prev) => prev.filter((ts) => ts !== timestamp));
+  };
+
+  /** Clear selection when history is cleared */
+  const handleClearHistory = () => {
+    clearHistory();
+    setSelected([]);
   };
 
   const toggleSelection = (timestamp: number) => {
@@ -90,7 +94,7 @@ export function HistoryPage() {
           </button>
           {history.length > 0 && (
             <button
-              onClick={clearHistory}
+              onClick={handleClearHistory}
               className="flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
             >
               <Trash2 className="w-4 h-4" />
@@ -151,6 +155,7 @@ export function HistoryPage() {
                     checked={checked}
                     disabled={!canCompare}
                     onChange={() => toggleSelection(entry.timestamp)}
+                    aria-label={canCompare ? `Select audit from ${formatted} for comparison` : `Legacy entry from ${formatted} cannot be compared`}
                     title={canCompare ? 'Select for comparison' : 'Legacy entry cannot be compared'}
                     className="h-4 w-4 accent-[var(--pg-accent)] disabled:opacity-40"
                   />
@@ -188,6 +193,7 @@ export function HistoryPage() {
                 <button
                   onClick={() => deleteEntry(entry.timestamp)}
                   className="p-2 text-gray-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors shrink-0"
+                  aria-label={`Delete audit from ${formatted}`}
                   title="Delete this audit"
                 >
                   <Trash2 className="w-4 h-4" />

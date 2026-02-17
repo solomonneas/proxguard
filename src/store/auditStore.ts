@@ -160,6 +160,7 @@ interface AuditState {
   clearResults: () => void;
   setVariant: (variant: number) => void;
   clearHistory: () => void;
+  deleteHistoryEntry: (timestamp: number) => void;
   setComparisonPair: (a: number, b: number) => void;
   clearComparison: () => void;
 }
@@ -250,6 +251,14 @@ export const useAuditStore = create<AuditState>()(
       /** Clear audit history */
       clearHistory: () => {
         set({ history: [], comparisonPair: null });
+      },
+
+      /** Delete a single history entry by timestamp */
+      deleteHistoryEntry: (timestamp: number) => {
+        set((state) => ({
+          history: state.history.filter((e) => e.timestamp !== timestamp),
+          comparisonPair: state.comparisonPair?.includes(timestamp) ? null : state.comparisonPair,
+        }));
       },
 
       /** Set report pair for comparison by timestamps */

@@ -233,6 +233,7 @@ function AppShell() {
             <NavLink
               to="/"
               end
+              aria-label="Home"
               className={({ isActive }) =>
                 `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive ? theme.classes.navActive : theme.classes.navInactive
@@ -244,6 +245,7 @@ function AppShell() {
             </NavLink>
             <NavLink
               to="/audit"
+              aria-label="Audit"
               className={({ isActive }) =>
                 `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive ? theme.classes.navActive : theme.classes.navInactive
@@ -255,6 +257,7 @@ function AppShell() {
             </NavLink>
             <NavLink
               to="/history"
+              aria-label="History"
               className={({ isActive }) =>
                 `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive ? theme.classes.navActive : theme.classes.navInactive
@@ -266,6 +269,7 @@ function AppShell() {
             </NavLink>
             <NavLink
               to="/compare"
+              aria-label="Compare"
               className={({ isActive }) =>
                 `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive ? theme.classes.navActive : theme.classes.navInactive
@@ -278,6 +282,7 @@ function AppShell() {
             {auditReport && (
               <NavLink
                 to="/compliance"
+                aria-label="Compliance"
                 className={({ isActive }) =>
                   `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive ? theme.classes.navActive : theme.classes.navInactive
