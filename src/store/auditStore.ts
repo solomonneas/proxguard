@@ -243,9 +243,9 @@ export const useAuditStore = create<AuditState>()(
         });
       },
 
-      /** Set the active UI variant (1-5) */
+      /** Set the active UI theme (1: light, 2: dark) */
       setVariant: (variant: number) => {
-        set({ activeVariant: Math.max(1, Math.min(5, variant)) });
+        set({ activeVariant: Math.max(1, Math.min(2, variant)) });
       },
 
       /** Clear audit history */
